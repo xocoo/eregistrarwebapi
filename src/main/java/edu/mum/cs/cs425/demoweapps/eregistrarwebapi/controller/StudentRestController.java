@@ -2,6 +2,7 @@ package edu.mum.cs.cs425.demoweapps.eregistrarwebapi.controller;
 
 import java.rmi.StubNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -43,9 +44,13 @@ public class StudentRestController {
     }
 
     @PutMapping(value = { "/update/{studentId}" })
-    public ResponseEntity<Student> updateStudent(@Valid @RequestBody Student student, @PathVariable Long studentId)
+    public ResponseEntity<?> updateStudent(@Valid @RequestBody Student student, @PathVariable Long studentId)
             throws StudentNotFoundException {
-        return new ResponseEntity<>(studentService.updatetStudent(student, studentId), HttpStatus.OK);
+        Student updateStudent = studentService.getStudentById(studentId);
+        if (updateStudent == null)
+            return new ResponseEntity<>("Student ID is invalid", HttpStatus.NOT_FOUND);
+        studentService.updatetStudent(student, studentId);
+        return new ResponseEntity<>("Student has been updated", HttpStatus.OK);
     }
 
     @DeleteMapping(value = { "/delete/{studentId}" })
